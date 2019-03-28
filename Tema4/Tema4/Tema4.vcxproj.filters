@@ -18,6 +18,9 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Value.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -26,5 +29,13 @@
     <ClCompile Include="Tema4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="date2.in">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="date1.in">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

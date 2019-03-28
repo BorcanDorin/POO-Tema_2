@@ -1,68 +1,77 @@
 #include "pch.h"
 #include <iostream>
 #include <fstream>
+#include "Value.h"
 
 using namespace std;
 
-class Nod
+class list_single
 {
-private:
-	Nod *prev_nod_;
-	float valoare_;
-	Nod *next_nod_;
+protected:
+	node_single* start_elem_;
 public:
-	Nod(float value);
-	friend class lista;
-	float get_valoare() { return valoare_; }
-	Nod* get_next_nod() { return next_nod_; }
-	Nod* get_prev_nod() { return prev_nod_; }
+	list_single()
+	{
+		start_elem_ = nullptr;
+	}
+
+	bool is_empty() const
+	{
+		return start_elem_ == nullptr;
+	}
+
+	void add(value &val)
+	{
+		const auto d = new node_single(val);
+		if (is_empty())
+		{
+			start_elem_ = d;
+			return;
+		}
+		auto p = this->start_elem_;
+		while (p->get_next_nod() != nullptr)
+			p = p->get_next_nod();
+
+		p = d;
+	}
 };
+
+
 
 class lista
 {
-	Nod* element_start_;
-	Nod* element_final_;
-	lista create_copy();
-	void delete_nod(Nod * elem);
-
-
+	nod_double* start_elem_;
+	nod_double* element_final_;
+	lista create_copy() const;
+	void delete_nod(nod_double * elem);
 public:
 	lista()
 	{
-		element_start_ = NULL;
-		element_final_ = NULL;
+		start_elem_ = nullptr;
+		element_final_ = nullptr;
 	}
-	void add_end(float value);
-	void add_end(float values[]);
-	void add_front(float value);
-	void add_front(float values[]);
-	bool is_empty();
-	int get_count();
+	void add_end(value val);
+	void add_front(value val);
+	bool is_empty() const;
+	int get_count() const;
 	void delete_front();
 	void delete_end();
-	void delete_value(const float value);
+	void delete_value(const value& val);
 	void delete_jump(const int step);
 	friend ostream& operator<<(ostream& output, lista& l);
-	lista operator+(lista l);
+	lista operator+(lista l) const;
 };
 
-Nod::Nod(float value)
+bool lista::is_empty() const
 {
-	prev_nod_ = NULL;
-	valoare_ = value;
-	next_nod_ = NULL;
+	return this->start_elem_ == nullptr;
 }
 
-bool lista::is_empty()
+int lista::get_count() const
 {
-	return this->element_start_ == NULL;
-}
-
-int lista::get_count()
-{
-	Nod *p = element_start_;
-	int s = 0;
-	while (p != NULL)
+	auto p = start_elem_;
+	auto s = 0;
+	while (p != nullptr)
 	{
 		s++;
 		p = p->next_nod_;
@@ -70,24 +79,26 @@ int lista::get_count()
 	return s;
 }
 
-lista lista::create_copy()
+
+
+lista lista::create_copy() const
 {
 	lista l;
-	Nod *p = this->element_start_;
-	while (p != NULL)
+	auto p = this->start_elem_;
+	while (p != nullptr)
 	{
-		l.add_end(p->valoare_);
+		l.add_end(p->value_);
 		p = p->next_nod_;
 	}
 	return l;
 }
 
-void lista::add_end(float value)
+void lista::add_end(value val)
 {
-	Nod* d = new Nod(value);
+	const auto d = new nod_double(val);
 	if (is_empty())
 	{
-		element_start_ = d;
+		start_elem_ = d;
 		element_final_ = d;
 		return;
 	}
@@ -96,37 +107,23 @@ void lista::add_end(float value)
 	element_final_ = d;
 }
 
-void lista::add_end(float values[])
+void lista::add_front(value val)
 {
-	const int length = sizeof(values) / sizeof(float);
-	for (int i = 0; i < length; i++)
-		add_end(values[i]);
-}
-
-void lista::add_front(float value)
-{
-	Nod* d = new Nod(value);
+	const auto d = new nod_double(val);
 	if (is_empty())
 	{
-		element_start_ = d;
+		start_elem_ = d;
 		element_final_ = d;
 		return;
 	}
-	element_start_->prev_nod_ = d;
+	start_elem_->prev_nod_ = d;
 	d->next_nod_ = element_final_;
 	element_final_ = d;
 }
 
-void lista::add_front(float values[])
-{
-	const int length = sizeof(values) / sizeof(float);
-	for (int i = 0; i < length; i++)
-		add_front(values[i]);
-}
-
 istream& operator>>(istream& input, lista& l)
 {
-	float val;
+	value val;
 	while (input >> val)
 		l.add_end(val);
 	return input;
@@ -134,17 +131,17 @@ istream& operator>>(istream& input, lista& l)
 
 ostream& operator<<(ostream& output, lista& l)
 {
-	Nod *p = l.element_start_;
-	while (p != NULL)
+	nod_double *p = l.start_elem_;
+	while (p != nullptr)
 	{
-		output << p->get_valoare() << " ";
+		output << p->get_value() << " ";
 		p = p->get_next_nod();
 	}
 	cout << endl;
 	p = l.element_final_;
-	while (p != NULL)
+	while (p != nullptr)
 	{
-		output << p->get_valoare() << " ";
+		output << p->get_value() << " ";
 		p = p->get_prev_nod();
 	}
 	cout << endl;
@@ -153,26 +150,26 @@ ostream& operator<<(ostream& output, lista& l)
 
 void lista::delete_end()
 {
-	if (element_final_ == element_start_)
+	if (element_final_ == start_elem_)
 	{
-		element_final_ = NULL;
-		element_start_ = NULL;
+		element_final_ = nullptr;
+		start_elem_ = nullptr;
 		return;
 	}
-	Nod *p = element_final_;
+	nod_double *p = element_final_;
 	element_final_ = element_final_->prev_nod_;
-	element_final_->next_nod_ = NULL;
+	element_final_->next_nod_ = nullptr;
 	delete(p);
 }
 
-void lista::delete_nod(Nod* elem)
+void lista::delete_nod(nod_double* elem)
 {
-	if (elem->next_nod_ == NULL)
+	if (elem->next_nod_ == nullptr)
 	{
 		delete_end();
 		return;
 	}
-	if (elem->prev_nod_ == NULL)
+	if (elem->prev_nod_ == nullptr)
 	{
 		delete_front();
 		return;
@@ -183,18 +180,18 @@ void lista::delete_nod(Nod* elem)
 	delete elem;
 }
 
-void lista::delete_value(const float value)
+void lista::delete_value(const value& val)
 {
-	while (element_start_->valoare_ == value)
+	while (start_elem_->value_ == val)
 		delete_front();
-	while (element_final_->valoare_ == value)
+	while (element_final_->value_ == val)
 		delete_end();
 	if (is_empty())
 		return;
-	Nod *p = element_start_->next_nod_;
-	while (p != NULL)
+	auto p = start_elem_->next_nod_;
+	while (p != nullptr)
 	{
-		if (p->valoare_ == value)
+		if (p->value_ == val)
 		{
 			p = p->prev_nod_;
 			delete_nod(p->next_nod_);
@@ -212,9 +209,9 @@ void lista::delete_jump(const int step)
 		delete_end();
 		return;
 	}
-	int step_count = 0;
-	Nod *p = element_start_;
-	while (p != NULL)
+	auto step_count = 0;
+	auto p = start_elem_;
+	while (p != nullptr)
 	{
 		step_count++;
 		if (step_count == step)
@@ -229,25 +226,25 @@ void lista::delete_jump(const int step)
 
 void lista::delete_front()
 {
-	if (element_final_ == element_start_)
+	if (element_final_ == start_elem_)
 	{
-		element_final_ = NULL;
-		element_start_ = NULL;
+		element_final_ = nullptr;
+		start_elem_ = nullptr;
 		return;
 	}
-	Nod *p = element_start_;
-	element_start_ = element_start_->next_nod_;
-	element_start_->prev_nod_ = NULL;
+	const auto p = start_elem_;
+	start_elem_ = start_elem_->next_nod_;
+	start_elem_->prev_nod_ = nullptr;
 	delete(p);
 }
 
-lista lista::operator+(lista l)
+lista lista::operator+(const lista l) const
 {
-	lista lista_n = this->create_copy();
-	Nod *p = l.element_start_;
-	while (p != NULL)
+	auto lista_n = this->create_copy();
+	auto p = l.start_elem_;
+	while (p != nullptr)
 	{
-		lista_n.add_end(p->valoare_);
+		lista_n.add_end(p->value_);
 		p = p->next_nod_;
 	}
 	return lista_n;
