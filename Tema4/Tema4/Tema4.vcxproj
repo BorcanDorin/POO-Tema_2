@@ -151,7 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Value.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
